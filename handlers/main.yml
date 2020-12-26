@@ -2,5 +2,5 @@
 # handlers file for safe-storage-timeouts
 
 - name: Trigger udev rules
-  shell: udevadm trigger
+  command: /usr/bin/udevadm trigger
   listen: trigger_udev
