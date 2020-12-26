@@ -1,0 +1,35 @@
+---
+# tasks file for safe-storage-timeouts
+
+- name: Install smartmontools
+  package:
+    name: "{{ smartmontools_pkg_name }}"
+    state: latest
+ 
+- name: Ensure "{{ helper_script_dir }}" exists
+  file:
+    path: "{{ helper_script_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+
+- name: Install udev helper script for setting disk timeouts
+  copy:
+    src: files/set-disk-timeout
+    dest: "{{ helper_script_dir }}/set-disk-timeout"
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+  notify:
+    - trigger_udev
+
+- name: Install udev rule to set disk timeouts
+  template:
+    src: templates/99-disk-timeout.rules
+    dest: /etc/udev/rules.d/99-disk-timeout.rules
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify:
+    - trigger_udev

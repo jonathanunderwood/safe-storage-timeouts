@@ -1,0 +1,5 @@
+---
+# defaults file for safe-storage-timeouts
+
+helper_script_dir: /usr/local/lib/udev
+smartmontools_pkg_name: smartmontools

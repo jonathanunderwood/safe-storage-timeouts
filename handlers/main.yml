@@ -1,0 +1,6 @@
+---
+# handlers file for safe-storage-timeouts
+
+- name: Trigger udev rules
+  shell: udevadm trigger
+  listen: trigger_udev

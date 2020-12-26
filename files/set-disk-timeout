@@ -1,0 +1,23 @@
+#!/bin/bash                                                                                                                  
+
+name="$1"
+device=/dev/"$1"
+
+enabled=$(smartctl --json=g -l scterc "$device" | grep -Po 'json\.ata_sct_erc\.read\.enabled = \K[true|false]+')
+
+timeout=180
+
+if [[ "$enabled" = "true" ]]; then
+    # Set kernel timeout to be the STCERC timeout plus 4 to 5 seconds
+    timeout=$(smartctl --json=g -l scterc "$device" | grep -Po 'json\.ata_sct_erc\.read\.deciseconds = \K[0-9]+')
+    timeout=$(((timeout+50)/10))
+elif [[ "$enabled" = "false" ]]; then
+    logger SCTERC is present but disabled for "$device"
+elif [[ -z "$enabled" ]]; then
+    logger SCTERC is not supported for "$device"
+else
+    logger failed to detect SCTERC state for "$device" 
+fi
+
+echo "$timeout" > /sys/block/"$name"/device/timeout
+logger timeout for "$device" set to "$timeout" secs

@@ -1,0 +1,65 @@
+# Copyright (C) 2017 by Jonathan G. Underwood
+# This file is part of mdraid-safe-timeouts.
+#
+# mdraid-safe-timeouts is free software: you can redistribute it
+# and/or modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation, either version 3 of
+# the License, or (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with mdraid-safe-timeouts.  If not, see
+# <http://www.gnu.org/licenses/>.
+
+# This set of rules attempts to set safe kernel timeouts for drives
+# depending on whether they have SCTERC/TLER functionality
+# enabled. This is an attempt to address the following
+# issue with drives dropping out of RAID arrays:
+# https://strugglers.net/~andy/blog/2015/11/09/linux-software-raid-and-drive-timeouts/
+
+# An earlier effort at managing this situation can be found at:
+# https://github.com/jonathanunderwood/mdraid-safe-timeouts
+
+# This approach attempts to identify only dnly those disks with
+# redundant (raid1 or higher) mdraid partitions and set the timeout
+# for those disks. However, as Chris Murphy points out here, that
+# approach is insufficient:
+
+# https://www.spinics.net/lists/raid/msg60784.html
+
+# As Chris says there, the timeouts need adjusting for RAID0 and
+# single disk ssituations, and for non-mdadm managed redundancy
+# (e.g. btrfs). With that in mind, we take a different and simpler
+# approach here, and simply adjust the kernel timeout based on the
+# SCTERC settings of each disk.
+
+# https://www.spinics.net/lists/linux-btrfs/msg41211.html
+# https://forum.openmediavault.org/index.php?thread/25398-raid-smart-timeout-stcerc-and-drives-how-to-set-them-correctly-in-omv/
+# https://en.wikipedia.org/wiki/Error_recovery_control
+
+# The logic applied is: (1) If the drive has SCTERC enabled, then set
+# the kernel timeout to be around 5 secs more than the SCTERC read
+# timeout; (2) If the drive has SCTERC functionality disabled, or
+# SCTERC functionality is not present, set the kernel timeout to 180
+# secs.
+
+causes block devices corresponding to drives without
+# SCTERC/TLER functionality enabled to have their scsi timeouts set to
+# 180s.
+
+# See udev(8) for syntax
+
+SUBSYSTEM!="block|machinecheck", GOTO="disk_timeout_exit"
+
+ENV{DEVTYPE}!="disk", GOTO="disk_timeout_exit"
+
+ACTION=="add|change", \
+  TEST=="/sys/block/$name/device/timeout", \
+  TEST=="/usr/sbin/smartctl", \
+  RUN+="{{ helper_script_dir }}/set-disk-timeout /dev/$name"
+
+LABEL="disk_timeout_exit"
