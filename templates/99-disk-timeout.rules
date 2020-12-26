@@ -60,6 +60,6 @@ ENV{DEVTYPE}!="disk", GOTO="disk_timeout_exit"
 ACTION=="add|change", \
   TEST=="/sys/block/$name/device/timeout", \
   TEST=="/usr/sbin/smartctl", \
-  RUN+="{{ helper_script_dir }}/set-disk-timeout /dev/$name"
+  RUN+="{{ helper_script_dir }}/set-disk-timeout $name"
 
 LABEL="disk_timeout_exit"
