@@ -1,4 +1,4 @@
-#!/bin/bash                                                                                                                  
+#!/bin/bash
 
 name="$1"
 device=/dev/"$1"
@@ -16,7 +16,7 @@ elif [[ "$enabled" = "false" ]]; then
 elif [[ -z "$enabled" ]]; then
     logger SCTERC is not supported for "$device"
 else
-    logger failed to detect SCTERC state for "$device" 
+    logger failed to detect SCTERC state for "$device"
 fi
 
 echo "$timeout" > /sys/block/"$name"/device/timeout
