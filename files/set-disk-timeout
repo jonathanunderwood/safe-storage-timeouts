@@ -5,19 +5,33 @@ device=/dev/"$1"
 
 enabled=$(smartctl --json=g -l scterc "$device" | grep -Po 'json\.ata_sct_erc\.read\.enabled = \K[true|false]+')
 
-timeout=180
+# kernel driver timeout in seconds
+kernel_timeout=180
+
+# device (SCTERC/TLER) timeout in seconds
+device_timeout=7
 
 if [[ "$enabled" = "true" ]]; then
     # Set kernel timeout to be the STCERC timeout plus 4 to 5 seconds
-    timeout=$(smartctl --json=g -l scterc "$device" | grep -Po 'json\.ata_sct_erc\.read\.deciseconds = \K[0-9]+')
-    timeout=$(((timeout+50)/10))
+    kernel_timeout=$(smartctl --json=g -l scterc "$device" | grep -Po 'json\.ata_sct_erc\.read\.deciseconds = \K[0-9]+')
+    kernel_timeout=$(((kernel_timeout+50)/10))
 elif [[ "$enabled" = "false" ]]; then
-    logger SCTERC is present but disabled for "$device"
+    # Attempt to enable the device SCTERC capability and set device timeouts for
+    # read and write
+    logger SCTERC is present but disabled for "$device". Attempting to activate ...
+    t=$((device_timeout*10))
+    if smartctl --quietmode=silent --log=scterc,"$t","$t" "$device"; then
+        logger SCTERC activated for "$device"
+        logger device read and write timeouts set for "$device" to "device_timeout" secs
+        kernel_timeout=$((device_timeout+5))
+    else
+        logger failed to active SCTERC for "$device"
+    fi
 elif [[ -z "$enabled" ]]; then
     logger SCTERC is not supported for "$device"
 else
     logger failed to detect SCTERC state for "$device"
 fi
 
-echo "$timeout" > /sys/block/"$name"/device/timeout
-logger timeout for "$device" set to "$timeout" secs
+echo "$kernel_timeout" > /sys/block/"$name"/device/timeout
+logger kernel timeout for "$device" set to "$kernel_timeout" secs

@@ -7,7 +7,10 @@ This is an attempt to address the issue of [drives dropping out of RAID arrays c
 
 An [earlier effort](https://github.com/jonathanunderwood/mdraid-safe-timeouts) at managing this situation identified only dnly those disks with redundant (raid1 or higher) mdraid partitions and set the timeout for those disks. However, as [Chris Murphy points out](https://www.spinics.net/lists/raid/msg60784.html) that approach is insufficient as the problem with incorrect timeouts also affects non-redundant disks and other RAID implementations such as BTRFS.
 
-The approach taken with this module is to has a udev rule that sets the kernel driver timeout for each drive using the following logic: (1) If the drive has SCTERC enabled, then set the kernel timeout to be around 5 secs more than the SCTERC read timeout; (2) If the drive has SCTERC functionality disabled, or SCTERC functionality is not present, set the kernel timeout to 180 secs.
+The approach taken with this module is to has a udev rule that sets the kernel driver timeout for each drive using the following logic: 
+
+1. If the drive has SCTERC enabled, then set the kernel timeout to be around 5 secs more than the SCTERC read timeout;2. Otherwise, if the drive has SCTERC functionality disabled, attempt to activate it and set a suitable device read and write timeout of 7 seconds
+3. If activating SCTERC fails or if SCTERC functionality is not present, set the kernel timeout to 180 secs.
 
 
 Requirements
