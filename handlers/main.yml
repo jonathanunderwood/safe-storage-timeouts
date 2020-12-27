@@ -1,5 +1,5 @@
 ---
-# handlers file for safe-storage-timeouts
+# handlers file for safe_storage_timeouts
 
 - name: Trigger udev rules for disks only
   command: /usr/bin/udevadm trigger --type=devices --subsystem-match=block --property-match=DEVNAME=/dev/sd?

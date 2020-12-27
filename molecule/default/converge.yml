@@ -2,6 +2,6 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include safe-storage-timeouts"
+    - name: "Include safe_storage_timeouts"
       include_role:
-        name: "safe-storage-timeouts"
+        name: "safe_storage_timeouts"
