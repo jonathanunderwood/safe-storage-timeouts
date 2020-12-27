@@ -2,13 +2,20 @@
 # depending on whether they have SCTERC/TLER functionality
 # enabled.
 
-SUBSYSTEM!="block|machinecheck", GOTO="disk_timeout_exit"
-
-ENV{DEVTYPE}!="disk", GOTO="disk_timeout_exit"
-
+{% if devices|length > 0 %}
 ACTION=="add|change", \
+  KERNEL=="{{ devices|join('|') }}", \
+  SUBSYSTEM=="block|machinecheck", \
+  ENV{DEVTYPE}=="disk", \
   TEST=="/sys/block/$name/device/timeout", \
   TEST=="/usr/sbin/smartctl", \
   RUN+="{{ helper_script_dir }}/set-disk-timeout $name"
+{% else %}
+ACTION=="add|change", \
+  SUBSYSTEM=="block|machinecheck", \
+  ENV{DEVTYPE}=="disk", \
+  TEST=="/sys/block/$name/device/timeout", \
+  TEST=="/usr/sbin/smartctl", \
+  RUN+="{{ helper_script_dir }}/set-disk-timeout $name"
+{% endif %}
 
-LABEL="disk_timeout_exit"

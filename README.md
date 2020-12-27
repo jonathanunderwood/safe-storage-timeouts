@@ -22,10 +22,11 @@ This role will install the [smartmontools](https://www.smartmontools.org/) packa
 Role Variables
 --------------
 
-| Variable                 | Default               | Description                                                 |
-| :--                      | :--                   | :--                                                         |
-| `helper_script_dir`      | `/usr/local/lib/udev` | The location to install the required udev helper script to. |
-| `smartmontools_pkg_name` | `smartmontools`       | The distribution package name for smartmontools             |
+| Variable                 | Default               | Description                                                                                              |
+| :--                      | :--                   | :--                                                                                                      |
+| `helper_script_dir`      | `/usr/local/lib/udev` | The location to install the required udev helper script to.                                              |
+| `smartmontools_pkg_name` | `smartmontools`       | The distribution package name for smartmontools                                                          |
+| `devices`                | `[]` (empty list)     | A list of devices to apply the rules too. If the list is empty, the rules will be applied to all devices |
 
 
 Dependencies
