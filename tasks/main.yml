@@ -1,11 +1,11 @@
 ---
-# tasks file for safe-storage-timeouts
+# tasks file for safe_storage_timeouts
 
 - name: Install smartmontools
   package:
     name: "{{ smartmontools_pkg_name }}"
     state: present
- 
+
 - name: Ensure "{{ helper_script_dir }}" exists
   file:
     path: "{{ helper_script_dir }}"
