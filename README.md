@@ -42,6 +42,11 @@ Example Playbook
         - role: safe-storage-timeouts
 
 
+Possible Improvements
+---------------------
+
+1. Expose the device and kernel timeouts as variables that can be set. As a first step this would be values applied to all devices, and as a follow on, it might be useful to be able to set values per device.
+
 License
 -------
 
