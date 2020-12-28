@@ -46,6 +46,8 @@ Possible Improvements
 ---------------------
 
 1. Expose the device and kernel timeouts as variables that can be set. As a first step this would be values applied to all devices, and as a follow on, it might be useful to be able to set values per device.
+2. Testing: [molecule](https://molecule.readthedocs.io/en/latest/) is set up and configured for testing, and at present checks that the role successfully runs with default values, and also lints the code. Expanding the testing would be valuable for the future.
+
 
 License
 -------
