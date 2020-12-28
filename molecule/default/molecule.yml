@@ -8,6 +8,7 @@ platforms:
     dockerfile: Dockerfile.j2
     image: fedora:33
     pre_build_image: false
+    privileged: true
 provisioner:
   name: ansible
 verifier:
